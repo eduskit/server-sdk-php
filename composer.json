@@ -2,7 +2,7 @@
   "name": "eduskit/server-sdk-php",
   "description": "Eduskit B-end server SDK for classroom and whiteboard APIs",
   "type": "library",
-  "license": "proprietary",
+  "license": "Apache-2.0",
   "require": {
     "php": ">=8.1"
   },
