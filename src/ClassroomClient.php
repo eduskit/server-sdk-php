@@ -21,27 +21,27 @@ class ClassroomClient
         };
         $members = new class($http) {
             public function __construct(private HttpTransport $http) {}
-            public function add(string $classroomId, array $input): mixed { return $this->http->request('POST', "/v1/classrooms/{$classroomId}/members", $input); }
-            public function list(string $classroomId): mixed { return $this->http->request('GET', "/v1/classrooms/{$classroomId}/members"); }
-            public function replaceStudents(string $classroomId, array $input): mixed { return $this->http->request('PUT', "/v1/classrooms/{$classroomId}/members/students", $input); }
+            public function add(string $classroomId, array $input): mixed { return $this->http->request('POST', '/v1/classrooms/members', array_replace($input, ['classroomId' => $classroomId])); }
+            public function list(string $classroomId): mixed { return $this->http->request('GET', HttpTransport::withQuery('/v1/classrooms/members', ['classroomId' => $classroomId])); }
+            public function replaceStudents(string $classroomId, array $input): mixed { return $this->http->request('PUT', '/v1/classrooms/members/students', array_replace($input, ['classroomId' => $classroomId])); }
         };
         $permissions = new class($http) {
             public function __construct(private HttpTransport $http) {}
-            public function get(string $classroomId, string $eduUserId): mixed { return $this->http->request('GET', "/v1/classrooms/{$classroomId}/members/{$eduUserId}/permissions"); }
-            public function set(string $classroomId, string $eduUserId, array $input): mixed { return $this->http->request('POST', "/v1/classrooms/{$classroomId}/members/{$eduUserId}/permissions", $input); }
-            public function clear(string $classroomId, string $eduUserId, string $permission, array $input): mixed { return $this->http->request('DELETE', "/v1/classrooms/{$classroomId}/members/{$eduUserId}/permissions/{$permission}", $input); }
+            public function get(string $classroomId, string $eduUserId): mixed { return $this->http->request('GET', HttpTransport::withQuery('/v1/classrooms/members/permissions', ['classroomId' => $classroomId, 'eduUserId' => $eduUserId])); }
+            public function set(string $classroomId, string $eduUserId, array $input): mixed { return $this->http->request('POST', '/v1/classrooms/members/permissions', array_replace($input, ['classroomId' => $classroomId, 'eduUserId' => $eduUserId])); }
+            public function clear(string $classroomId, string $eduUserId, string $permission, array $input): mixed { return $this->http->request('DELETE', HttpTransport::withQuery('/v1/classrooms/members/permissions', ['classroomId' => $classroomId, 'eduUserId' => $eduUserId, 'permission' => $permission]), $input); }
         };
         $coursewares = new class($http) {
             public function __construct(private HttpTransport $http) {}
-            public function list(string $classroomId): mixed { return $this->http->request('GET', "/v1/classrooms/{$classroomId}/coursewares"); }
-            public function bind(string $classroomId, array $input): mixed { return $this->http->request('POST', "/v1/classrooms/{$classroomId}/coursewares", $input); }
-            public function unbind(string $classroomId, array $input): mixed { return $this->http->request('DELETE', "/v1/classrooms/{$classroomId}/coursewares", $input); }
+            public function list(string $classroomId): mixed { return $this->http->request('GET', HttpTransport::withQuery('/v1/classrooms/coursewares', ['classroomId' => $classroomId])); }
+            public function bind(string $classroomId, array $input): mixed { return $this->http->request('POST', '/v1/classrooms/coursewares', array_replace($input, ['classroomId' => $classroomId])); }
+            public function unbind(string $classroomId, array $input): mixed { return $this->http->request('DELETE', HttpTransport::withQuery('/v1/classrooms/coursewares', ['classroomId' => $classroomId]), $input); }
         };
         $this->classrooms = new class($http, $members, $permissions, $coursewares) {
             public function __construct(private HttpTransport $http, public object $members, public object $permissions, public object $coursewares) {}
             public function create(array $input): mixed { return $this->http->request('POST', '/v1/classrooms', $input); }
-            public function start(string $classroomId): mixed { return $this->http->request('POST', "/v1/classrooms/{$classroomId}/start"); }
-            public function end(string $classroomId): mixed { return $this->http->request('POST', "/v1/classrooms/{$classroomId}/end"); }
+            public function start(string $classroomId): mixed { return $this->http->request('POST', '/v1/classrooms/start', array_replace([], ['classroomId' => $classroomId])); }
+            public function end(string $classroomId): mixed { return $this->http->request('POST', '/v1/classrooms/end', array_replace([], ['classroomId' => $classroomId])); }
         };
         $this->app = new class($http) {
             public function __construct(private HttpTransport $http) {}

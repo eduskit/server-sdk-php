@@ -6,6 +6,12 @@ class HttpTransport
 {
     public string $lastTraceId = '';
 
+    public static function withQuery(string $path, array $identifiers): string
+    {
+        return $path . '?' . http_build_query($identifiers, '', '&', PHP_QUERY_RFC3986);
+    }
+
+
     public function __construct(
         private readonly string $baseUrl,
         private readonly string $appKey,
