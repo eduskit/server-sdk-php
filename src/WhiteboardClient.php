@@ -4,6 +4,7 @@ namespace Eduskit;
 
 class WhiteboardClient
 {
+    public object $rooms;
     public object $auth;
     public object $recordings;
     public object $captures;
@@ -11,6 +12,21 @@ class WhiteboardClient
 
     public function __construct(private readonly HttpTransport $http, string $appId, string $appSecret)
     {
+        $this->rooms = new class($http) {
+            public function __construct(private HttpTransport $http) {}
+            public function schedulePrivateRoomWrites(string $roomId, string $requestId, string $opensAt, string $closesAt): mixed { return $this->http->request('POST', '/v1/rooms/private/write-window', ['roomId' => $roomId, 'requestId' => $requestId, 'opensAt' => $opensAt, 'closesAt' => $closesAt]); }
+            public function initializePrivateWorkspace(string $roomId, string $assignmentId, ?string $sourceSnapshotId): mixed { return $this->http->request('POST', '/v1/rooms/private/initializations', ['roomId' => $roomId, 'assignmentId' => $assignmentId, 'sourceSnapshotId' => $sourceSnapshotId]); }
+            public function getPrivateWorkspaceInitialization(string $roomId): mixed { return $this->http->request('POST', '/v1/rooms/private/initializations/query', ['roomId' => $roomId]); }
+            public function provisionPrivateRoom(string $roomId, string $assignmentId): mixed { return $this->http->request('POST', '/v1/rooms/private', ['roomId' => $roomId , 'assignmentId' => $assignmentId]); }
+            public function changePrivateRoomGrant(string $roomId, array $input): mixed { return $this->http->request('POST', '/v1/rooms/private/grants', array_replace($input, ['roomId' => $roomId])); }
+            public function getPrivateRoomAccess(string $roomId, string $userId): mixed { return $this->http->request('POST', '/v1/rooms/private/access/query', ['roomId' => $roomId , 'userId' => $userId]); }
+            public function issuePrivateRoomToken(string $roomId, array $input): mixed { return $this->http->request('POST', '/v1/rooms/private/token', array_replace($input, ['roomId' => $roomId])); }
+            public function sealPrivateRoom(string $roomId): mixed { return $this->http->request('POST', '/v1/rooms/private/seal', ['roomId' => $roomId]); }
+            public function createFrozenSnapshot(string $roomId, string $snapshotId): mixed { return $this->http->request('POST', '/v1/rooms/private/snapshots', ['roomId' => $roomId , 'snapshotId' => $snapshotId]); }
+            public function getFrozenSnapshot(string $roomId, string $snapshotId): mixed { return $this->http->request('POST', '/v1/rooms/private/snapshots/query', ['roomId' => $roomId , 'snapshotId' => $snapshotId]); }
+            public function getFrozenSnapshotDownload(string $roomId, string $snapshotId): mixed { return $this->http->request('POST', '/v1/rooms/private/snapshots/download', ['roomId' => $roomId , 'snapshotId' => $snapshotId]); }
+            public function attachCourseware(string $roomId, array $input): mixed { return $this->http->request('POST', '/v1/rooms/coursewares', array_replace($input, ['roomId' => $roomId])); }
+        };
         $this->auth = new class($appId, $appSecret) {
             public function __construct(private string $appId, private string $appSecret) {}
             public function issueRoomToken(array $input): mixed { return TokenSigner::room($this->appId, $this->appSecret, $input); }

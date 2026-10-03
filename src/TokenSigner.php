@@ -26,7 +26,7 @@ final class TokenSigner
         if (!in_array($role, ['host', 'participant', 'observer'], true)) self::error('invalid role', 'whiteboard');
         $expiresIn = self::expiry($input, 3600, 'whiteboard');
         [$token, $expiresAt] = self::sign($appId, $appSecret, $userId, 'eduskit', 'eduskit-room', $expiresIn,
-            ['app_id' => $appId, 'room_id' => $roomId, 'role' => $role, 'source' => 'server_sdk'], 'whiteboard');
+            ['app_id' => $appId, 'room_id' => $roomId, 'role' => $role, 'source' => 'server_sdk', 'access_generation' => null], 'whiteboard');
         return ['token' => $token, 'appId' => $appId, 'roomId' => $roomId, 'userId' => $userId,
             'role' => $role, 'expiresIn' => $expiresIn, 'expiresAt' => self::iso($expiresAt)];
     }
